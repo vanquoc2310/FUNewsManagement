@@ -1,0 +1,38 @@
+﻿@page
+@model VanDinhQuocRazorPages.Pages.LoginModel
+@{
+	ViewData["Title"] = "Login";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-4 border p-4 rounded shadow-sm bg-light">
+            <h2 class="text-center mb-4">Login</h2>
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="alert alert-danger text-center" role="alert">
+                    @Model.ErrorMessage
+                </div>
+            }
+
+            <form method="post">
+                <div class="mb-3">
+                    <label for="txtEmail" class="form-label">Email:</label>
+                    <input type="text" name="txtEmail" id="txtEmail" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="txtPassword" class="form-label">Password:</label>
+                    <input type="password" name="txtPassword" id="txtPassword" class="form-control" />
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" name="btnLogin" value="Submit" class="btn btn-primary">
+                        Submit
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+

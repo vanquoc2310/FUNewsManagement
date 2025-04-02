@@ -1,0 +1,225 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.Rendering
+@model VanDinhQuocRazorPages.Pages.NewsArticles.IndexModel
+@{
+    ViewData["Title"] = "News Articles";
+    string role = HttpContext.Session.GetString("Role");
+    if (!"1".Equals(role)) Response.Redirect("/NotPermission");
+
+    string toastMessage = TempData["ToastMessage"]?.ToString();
+    string toastColor = toastMessage != null && toastMessage.Contains("✅") ? "bg-success" : "bg-danger";
+    bool isSuccess = TempData["ActionSuccess"]?.ToString() == "True";
+}
+
+@if (!string.IsNullOrEmpty(toastMessage))
+{
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1200;">
+        <div id="liveToast" class="toast align-items-center text-white @toastColor border-0" role="alert"
+             aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="4000">
+            <div class="d-flex">
+                <div class="toast-body">@toastMessage</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+    <script>
+        const toastEl = document.getElementById('liveToast');
+        if (toastEl) {
+            const toast = new bootstrap.Toast(toastEl);
+            toast.show();
+        }
+    </script>
+    }
+}
+
+<link rel="stylesheet" href="~/css/news-article.css" />
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>News Article Management</h2>
+        <a asp-page-handler="CreatePopup" asp-route-CurrentPage="@Model.CurrentPage" class="btn btn-primary">Create</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered text-center">
+            <thead class="table-header">
+                <tr>
+                    <th>Title</th>
+                    <th>Created Date</th>
+                    <th>Status</th>
+                    <th>Category</th>
+                    <th>Tags</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var article in Model.NewsArticles)
+                {
+                    <tr>
+                        <td class="text-start">@article.NewsTitle</td>
+                        <td>@article.CreatedDate?.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            @if (article.NewsStatus == true)
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Inactive</span>
+                            }
+                        </td>
+                        <td>@article.Category?.CategoryName</td>
+                        <td class="text-start">
+                            <div class="d-flex flex-wrap gap-1">
+                                @foreach (var tag in article.Tags)
+                                {
+                                    <span class="badge bg-info text-dark">@tag.TagName</span>
+                                }
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex justify-content-center gap-1">
+                                <a asp-page-handler="EditPopup" asp-route-id="@article.NewsArticleId" asp-route-CurrentPage="@Model.CurrentPage" class="btn btn-warning btn-sm">Edit</a>
+                                <a asp-page-handler="DeleteConfirm" asp-route-id="@article.NewsArticleId" asp-route-CurrentPage="@Model.CurrentPage" class="btn btn-danger btn-sm">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                <a class="page-link" href="?CurrentPage=@(Model.CurrentPage - 1)">Previous</a>
+            </li>
+            @for (var i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                    <a class="page-link" href="?CurrentPage=@i">@i</a>
+                </li>
+            }
+            <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                <a class="page-link" href="?CurrentPage=@(Model.CurrentPage + 1)">Next</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+@if (Model.IsPopupOpen)
+{
+    <div class="modal fade show d-block" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@(Model.IsEditMode ? "Edit Article" : "Create Article")</h5>
+                    <a asp-page="Index" asp-route-CurrentPage="@Model.CurrentPage" class="btn-close"></a>
+                </div>
+                <div class="modal-body">
+                    <form method="post" asp-page-handler="Save" enctype="application/x-www-form-urlencoded">
+                        @if (Model.IsEditMode)
+                        {
+                            <input type="hidden" asp-for="NewsArticle.NewsArticleId" />
+                        }
+
+                        <div class="mb-3">
+                            <label asp-for="NewsArticle.NewsTitle" class="form-label"></label>
+                            <input asp-for="NewsArticle.NewsTitle" class="form-control" />
+                            <span asp-validation-for="NewsArticle.NewsTitle" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="NewsArticle.NewsContent" class="form-label"></label>
+                            <textarea asp-for="NewsArticle.NewsContent" class="form-control"></textarea>
+                            <span asp-validation-for="NewsArticle.NewsContent" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="NewsArticle.Headline"></label>
+                            <input asp-for="NewsArticle.Headline" class="form-control" />
+                            <span asp-validation-for="NewsArticle.Headline" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="NewsArticle.NewsSource"></label>
+                            <input asp-for="NewsArticle.NewsSource" class="form-control" />
+                            <span asp-validation-for="NewsArticle.NewsSource" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="NewsArticle.CategoryId" class="form-label"></label>
+                            <select asp-for="NewsArticle.CategoryId" class="form-select" asp-items="@(new SelectList(Model.Categories, "CategoryId", "CategoryName"))">
+                                <option value="">-- Select Category --</option>
+                            </select>
+                            <span asp-validation-for="NewsArticle.CategoryId" class="text-danger"></span>
+                        </div>
+
+                        @if (Model.IsEditMode)
+                        {
+                            <div class="mb-3">
+                                <label asp-for="NewsArticle.NewsStatus" class="form-label">Status</label>
+                                <select asp-for="NewsArticle.NewsStatus" class="form-select">
+                                    <option value="true">Active</option>
+                                    <option value="false">Inactive</option>
+                                </select>
+                                <span asp-validation-for="NewsArticle.NewsStatus" class="text-danger"></span>
+                            </div>
+                        }
+
+                        <div class="mb-3">
+                            <label class="form-label">Tags</label>
+                            <div class="d-flex flex-wrap gap-2">
+                                @foreach (var tag in Model.AllTags)
+                                {
+                                    <div class="form-check me-3">
+                                        <input class="form-check-input" type="checkbox"
+                                               name="SelectedTagIds"
+                                               value="@tag.TagId"
+                                               id="tag-@tag.TagId"
+                                        @(Model.SelectedTagIds.Contains(tag.TagId) ? "checked" : "") />
+                                        <label class="form-check-label" for="tag-@tag.TagId">@tag.TagName</label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">Save</button>
+                            <a asp-page="Index" asp-route-CurrentPage="@Model.CurrentPage" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+
+@if (Model.IsDeletePopup && !isSuccess)
+{
+    <div class="modal fade show d-block" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                    <a asp-page="Index" asp-route-CurrentPage="@Model.CurrentPage" class="btn-close"></a>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this article?</p>
+                </div>
+                <div class="modal-footer">
+                    <form method="post" asp-page-handler="Delete">
+                        <input type="hidden" name="id" value="@Model.IdToDelete" />
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                        <a asp-page="Index" asp-route-CurrentPage="@Model.CurrentPage" class="btn btn-secondary">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}

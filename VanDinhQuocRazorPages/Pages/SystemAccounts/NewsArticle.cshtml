@@ -1,0 +1,62 @@
+﻿@page
+@model VanDinhQuocRazorPages.Pages.SystemAccounts.NewsArticleModel
+@{
+    ViewData["Title"] = "Report - News by Date Range";
+}
+
+<h1 class="text-center fw-bold mb-4">News Report</h1>
+
+<form method="get" class="row mb-4 justify-content-center">
+    <div class="col-md-3">
+        <label class="form-label">Start Date</label>
+        <input type="date" class="form-control" name="StartDate" value="@Model.StartDate?.ToString("yyyy-MM-dd")" />
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">End Date</label>
+        <input type="date" class="form-control" name="EndDate" value="@Model.EndDate?.ToString("yyyy-MM-dd")" />
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary w-100">Generate Report</button>
+    </div>
+</form>
+
+@if (Model.PaginatedArticles != null && Model.PaginatedArticles.Count > 0)
+{
+    <table class="table table-bordered text-center align-middle shadow-sm">
+        <thead class="table-secondary">
+            <tr>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Author</th>
+                <th>Created Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var article in Model.PaginatedArticles)
+            {
+                <tr>
+                    <td>@article.NewsTitle</td>
+                    <td>@article.Category?.CategoryName</td>
+                    <td>@article.CreatedBy?.AccountName</td>
+                    <td>@article.CreatedDate?.ToString("dd-MM-yyyy")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <nav>
+        <ul class="pagination justify-content-center">
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                    <a class="page-link"
+                       href="?CurrentPage=@i&StartDate=@Model.StartDate?.ToString("yyyy-MM-dd")&EndDate=@Model.EndDate?.ToString("yyyy-MM-dd")">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}
+else
+{
+    <div class="alert alert-info text-center">No articles found for the selected period.</div>
+}

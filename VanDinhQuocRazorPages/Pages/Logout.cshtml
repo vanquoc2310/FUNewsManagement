@@ -1,0 +1,6 @@
+﻿@page
+@model VanDinhQuocRazorPages.Pages.LogoutModel
+@{
+    HttpContext.Session.Clear();
+    Response.Redirect("/Login");
+}

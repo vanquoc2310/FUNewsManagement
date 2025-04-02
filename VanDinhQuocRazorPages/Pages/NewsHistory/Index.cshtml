@@ -1,0 +1,94 @@
+﻿@page
+@model VanDinhQuocRazorPages.Pages.NewsHistory.IndexModel
+@{
+    ViewData["Title"] = "History";
+    string role = HttpContext.Session.GetString("Role");
+    if (!"1".Equals(role)) Response.Redirect("/NotPermission");
+}
+
+<style>
+    thead.custom-header {
+        background-color: #0077cc; 
+        color: white;
+        text-align: center;
+    }
+
+        thead.custom-header th {
+            vertical-align: middle;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+    .table td {
+        vertical-align: middle;
+    }
+</style>
+
+<div class="mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">Lịch sử bài viết đã tạo</h2>
+        </div>
+        <div class="card-body">
+            @if (!Model.NewsHistory.Any())
+            {
+                <p class="text-center text-muted">Không có bài viết nào được tạo.</p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle text-center">
+                        <thead class="custom-header">
+                            <tr>
+                                <th>Tiêu đề</th>
+                                <th>Danh mục</th>
+                                <th>Ngày tạo</th>
+                                <th>Người tạo</th>
+                                <th>Trạng thái</th>
+                                <th>Tags</th>
+                                <th>Ngày cập nhật</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.NewsHistory)
+                            {
+                                <tr>
+                                    <td>@item.NewsTitle</td>
+                                    <td>@item.Category?.CategoryName</td>
+                                    <td>@(item.CreatedDate?.ToString("dd/MM/yyyy"))</td>
+                                    <td>@item.CreatedBy?.AccountName</td>
+                                    <td>
+                                        @if (item.NewsStatus == true)
+                                        {
+                                            <span class="badge bg-success">Hiển thị</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Ẩn</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (item.Tags != null && item.Tags.Any())
+                                        {
+                                            <div class="d-flex flex-wrap justify-content-center gap-1">
+                                                @foreach (var tag in item.Tags)
+                                                {
+                                                    <span class="badge bg-info text-dark">@tag.TagName</span>
+                                                }
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Không có</span>
+                                        }
+                                    </td>
+                                    <td>@(item.ModifiedDate?.ToString("dd/MM/yyyy"))</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>

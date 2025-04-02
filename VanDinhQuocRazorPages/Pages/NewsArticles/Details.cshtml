@@ -1,0 +1,78 @@
+﻿@page
+@model VanDinhQuocRazorPages.Pages.NewsArticles.DetailsModel
+@{
+    ViewData["Title"] = "News Article Details";
+}
+
+<h2 class="fw-bold mb-4 text-center text-primary">News Article Details</h2>
+
+<div class="card shadow-sm h-100">
+    <div class="card-body">
+        <!-- Display News Title -->
+        <h5 class="card-title fw-bold text-dark">@Model.NewsArticle.NewsTitle</h5>
+
+        <!-- Display Category -->
+        <p class="card-text text-muted mb-1"><strong>Category:</strong> @Model.NewsArticle.Category?.CategoryName</p>
+
+        <!-- Display Author -->
+        <p class="card-text text-muted mb-2"><strong>Author:</strong> @Model.NewsArticle.CreatedBy?.AccountName</p>
+
+        <!-- Display Created Date -->
+        <p class="card-text text-muted"><strong>Created:</strong> @Model.NewsArticle.CreatedDate?.ToString("dd/MM/yyyy")</p>
+
+        <!-- Display News Source -->
+        <p class="card-text text-muted"><strong>Source:</strong> @Model.NewsArticle.NewsSource</p>
+
+        <!-- Display Headline -->
+        <h6 class="card-subtitle mb-2 text-muted"><strong>Headline:</strong> @Model.NewsArticle.Headline</h6>
+
+        <!-- Display Full News Content -->
+        <div class="card-text mb-3">
+            <strong>Content:</strong>
+            <p>@Model.NewsArticle.NewsContent</p>
+        </div>
+
+    </div>
+</div>
+
+<div class="mt-3">
+    <a href="/NewsArticles/LecturerViewModel" class="btn btn-secondary">Back to Articles</a>
+</div>
+
+<style>
+    .card {
+        margin-bottom: 20px;
+    }
+
+    .card-body {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #343a40;
+    }
+
+    .card-subtitle {
+        font-size: 1.1rem;
+        color: #6c757d;
+    }
+
+    .card-text {
+        font-size: 1rem;
+        line-height: 1.5;
+        color: #495057;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+</style>

@@ -1,0 +1,93 @@
+﻿@page
+@model VanDinhQuocRazorPages.Pages.NewsArticles.LecturerViewModel
+
+@{
+    ViewData["Title"] = "Active News Articles";
+}
+
+<h2 class="fw-bold mb-4 text-center text-primary">Active News Articles</h2>
+
+<!-- Search Bar -->
+<form method="get" class="mb-3">
+    <div class="input-group">
+        <input type="text" class="form-control" placeholder="Search by title..." name="SearchKeyword" value="@Model.SearchKeyword" />
+        <button class="btn btn-primary" type="submit">Search</button>
+    </div>
+</form>
+
+<div class="container">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var article in Model.ActiveArticles)
+        {
+            <div class="col">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold text-dark">@article.NewsTitle</h5>
+                        <p class="card-text text-muted mb-1"><strong>Category:</strong> @article.Category?.CategoryName</p>
+                        <p class="card-text text-muted mb-2"><strong>Author:</strong> @article.CreatedBy?.AccountName</p>
+                        <p class="card-text text-muted"><strong>Created:</strong> @article.CreatedDate?.ToString("dd/MM/yyyy")</p>
+                        <p class="card-text text-muted"><strong>Source:</strong>
+                            @article.NewsSource</p>
+                        <!-- Button to navigate to article details -->
+                        <a href="/NewsArticles/Details?newsArticleId=@article.NewsArticleId" class="btn btn-outline-primary mt-2">Read More</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Pagination -->
+    <nav>
+        <ul class="pagination justify-content-center">
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                    <a class="page-link" href="?CurrentPage=@i&SearchKeyword=@Model.SearchKeyword">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+</div>
+
+<style>
+    /* CSS cho thanh tìm kiếm */
+    .input-group {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .input-group .form-control {
+        border-radius: 30px;
+    }
+
+    .input-group button {
+        border-radius: 30px;
+    }
+
+    /* CSS cho phân trang */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .page-item {
+        margin: 0 5px;
+    }
+
+    .page-link {
+        padding: 8px 16px;
+        border-radius: 5px;
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    .page-link:hover {
+        background-color: #f0f0f0;
+    }
+
+    .page-item.active .page-link {
+        background-color: #007bff;
+        color: white;
+    }
+</style>
