@@ -17,7 +17,10 @@ namespace VanDinhQuocRazorPages.Pages.NewsArticles
         }
 
         public IList<NewsArticle> ActiveArticles { get; set; } = default!;
+
+        [BindProperty(SupportsGet = true)]
         public int CurrentPage { get; set; } = 1;
+
         public int TotalPages { get; set; }
 
         [BindProperty(SupportsGet = true)]
@@ -34,7 +37,9 @@ namespace VanDinhQuocRazorPages.Pages.NewsArticles
 
             if (!string.IsNullOrWhiteSpace(SearchKeyword))
             {
-                allArticles = allArticles.Where(x => x.NewsTitle.Contains(SearchKeyword, StringComparison.OrdinalIgnoreCase)).ToList();
+                allArticles = allArticles
+                    .Where(x => x.NewsTitle.Contains(SearchKeyword, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
             }
 
             TotalPages = (int)Math.Ceiling(allArticles.Count / (double)PageSize);
